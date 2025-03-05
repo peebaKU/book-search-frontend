@@ -69,14 +69,9 @@ const Search = () => {
         <div className={`${paginatedResults.length <=5 ? 'h-screen' : 'h-full'} w-screen mx-auto p-8 md:p-10 ${darkMode ? 'bg-gray-900 text-white' : 'bg-white text-black'} overflow-y-scroll`}>
             <div className="flex items-center mb-4 flex-row justify-between">
                 <h1 className="text-3xl font-bold mb-4">Book Search Engine</h1>
-                <label className="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" checked={darkMode} onChange={toggleDarkMode} className="sr-only" id="dark-mode" />
-                    <label htmlFor="dark-mode" className="flex items-center cursor-pointer">
-                        {darkMode ? <FontAwesomeIcon icon={faMoon} className="w-6 h-6" /> : <FontAwesomeIcon icon={faSun} className="w-6 h-6" />}
-                    </label>
-                    <div className="w-11 h-6 bg-gray-200 rounded-full shadow-inner"></div>
-                    <div className={`absolute w-5 h-5 bg-white rounded-full shadow transition-transform duration-200 ease-in-out ${darkMode ? 'translate-x-5' : 'translate-x-0'}`}></div>
-                </label>
+                <button onClick={toggleDarkMode} className="flex items-center cursor-pointer hover:text-gray-700 dark:hover:text-gray-300">
+                        {darkMode ? <FontAwesomeIcon icon={faMoon} className="w-10 h-10" /> : <FontAwesomeIcon icon={faSun} className="w-10 h-10" />}
+                </button>
             </div>
             <div className="flex items-center mb-4">
                 <input
