@@ -1,6 +1,6 @@
 export interface Book {
-    productURL: string;
-    imageURL: string;
+    url: string;
+    imageUrl: string;
     title: string;
     authors: string[];
     isbn: string;
