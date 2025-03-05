@@ -3,6 +3,8 @@
 import React, { useState } from 'react';
 import { Book } from '@/app/models/Book';
 import Highlighter from 'react-highlight-words';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMoon, faSun } from '@fortawesome/free-solid-svg-icons';
 
 const Search = () => {
     const [query, setQuery] = useState('');
@@ -64,11 +66,14 @@ const Search = () => {
     const paginatedResults = results.slice(start, end);
 
     return (
-        <div className={`${paginatedResults.length <=5 ? 'h-screen' : 'h-full'} w-screen mx-auto p-8 md:p-10 ${darkMode ? 'bg-gray-900 text-white' : 'bg-white text-black'}`}>
+        <div className={`${paginatedResults.length <=5 ? 'h-screen' : 'h-full'} w-screen mx-auto p-8 md:p-10 ${darkMode ? 'bg-gray-900 text-white' : 'bg-white text-black'} overflow-y-scroll`}>
             <div className="flex items-center mb-4 flex-row justify-between">
                 <h1 className="text-3xl font-bold mb-4">Book Search Engine</h1>
                 <label className="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" checked={darkMode} onChange={toggleDarkMode} className="sr-only" />
+                    <input type="checkbox" checked={darkMode} onChange={toggleDarkMode} className="sr-only" id="dark-mode" />
+                    <label htmlFor="dark-mode" className="flex items-center cursor-pointer">
+                        {darkMode ? <FontAwesomeIcon icon={faMoon} className="w-6 h-6" /> : <FontAwesomeIcon icon={faSun} className="w-6 h-6" />}
+                    </label>
                     <div className="w-11 h-6 bg-gray-200 rounded-full shadow-inner"></div>
                     <div className={`absolute w-5 h-5 bg-white rounded-full shadow transition-transform duration-200 ease-in-out ${darkMode ? 'translate-x-5' : 'translate-x-0'}`}></div>
                 </label>
@@ -105,7 +110,8 @@ const Search = () => {
             </div>
             <div id="results" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                 {paginatedResults.map((book, index) => (
-                    <div key={index} onClick={() => window.open(`${book.productURL}`, '_blank')} className={`p-4 rounded shadow ${darkMode ? 'bg-gray-700' : 'bg-white'} cursor-pointer`}>
+                    <div key={index} onClick={() => window.open(`${book.productURL}`, '_blank')} className={`p-4 rounded shadow ${darkMode ? 'bg-gray-700' : 'bg-white'} cursor-pointer flex flex-col justify-between`}>
+                        <div>
                         <img src={book.imageURL} alt={book.title} className="h-90 object-cover mb-2" />
                         <h3 className="text-xl font-bold">                        
                         <Highlighter
@@ -113,24 +119,37 @@ const Search = () => {
                             textToHighlight={book.title}
                             highlightStyle={{ backgroundColor: 'yellow' }}
                         /></h3>
-                        <p className={`${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Author:                         <Highlighter
+                        </div>
+                        <div className="mt-2">
+                        <p className={`${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                        <span className='font-bold'>
+                            Author: 
+                        </span>                    
+                        <Highlighter
                             searchWords={[queryOld]}  // Wrap query in an array
                             textToHighlight={book.authors}
                             highlightStyle={{ backgroundColor: 'yellow' }}
-                        /></p>
-                        <p className={`${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>ISBN: {book.isbn === "" ? 'N/A' :   <Highlighter
+                        />
+                        </p>
+                        <p className={`${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                        <span className='font-bold'>
+                            ISBN:
+                        </span> 
+                        {book.isbn === "" ? 'N/A' :   
+                        <Highlighter
                             searchWords={[queryOld]}  // Wrap query in an array
                             textToHighlight={book.isbn}
                             highlightStyle={{ backgroundColor: 'yellow' }}
                         />}
                         </p>
-                        <p className={`${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Description: 
+                        <p className={`${darkMode ? 'text-gray-300' : 'text-gray-700'}`}><span className='font-bold'>Description: </span> 
                         <Highlighter
                                 searchWords={[queryOld]}  // Wrap query in an array
                                 textToHighlight={book.description}
                                 highlightStyle={{ backgroundColor: 'yellow' }}
                             />
                         </p>
+                        </div>
                     </div>
                 ))}
                 {paginatedResults.length === 0 && <p className={`w-full h-full flex items-center justify-center ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>No results found.</p>}
