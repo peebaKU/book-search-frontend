@@ -17,23 +17,62 @@ const Search = () => {
     const [selectISBN, setSelectISBN] = useState(true);
     const [selectDescription, setSelectDescription] = useState(true);
     const [selectTitle, setSelectTitle] = useState(true);
+    const [page, setPage] = useState(1);
+    const [pageSize, setPageSize] = useState(10);
+    const [totalHits, setTotalHits] = useState(0);
+
+    const fetchData = async () => {
+        const response = await fetch('http://100.70.0.1:3000/search', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                queryString: query,
+                queryOption: {
+                    useTitle: selectTitle,
+                    useIsbn: selectISBN,
+                    useDescription: selectDescription,
+                    useAuthors: selectAuthor,
+                },
+                page: page,
+                pageSize: resultsPerPage,
+            }),
+        });
+        const data = await response.json();
+        setResults(data.books);
+        setTotalHits(data.totalHits);
+        setPage(data.page);
+        setPageSize(data.pageSize);
+        console.log(data);
+    };
+
+    const handlePerPageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if(Number(e.target.value)>0){
+            setResultsPerPage(Number(e.target.value));
+        }
+    };
 
     const books: Book[] = [
-        {productURL: 'https://www.chulabook.com/test-prep/193428', imageURL: 'https://api.chulabook.com/images/pid-193428.jpg', title: 'เตรียมสอบสังคม ม.ปลาย ฉบับพร้อมเก็บคะแนนทุกสนามสอบ A-LEVEL (สังคมแมวส้ม)', authors: ['F. Scott Fitzgerald','F. Scott Fitzgerald'], isbn: '9780743273565', description: 'A novel set in the Roaring Twenties.'},
-        {productURL: 'https://www.chulabook.com/test-prep/4707', imageURL: 'https://api.chulabook.com/images/pid-4707.JPG', title: 'เตรียมสอบ คณิตศาสตร์ ม.3 เข้า ม.4 (เตรียมอุดม มหิดลวิทยานุสรณ์ สาธิตฯ) :เตรียมสอบ เด็กสายวิทย์', authors: ['George Orwell','George Orwell'], isbn: '', description: 'Dystopian novel about totalitarianism.'},
-        {productURL: 'https://www.chulabook.com/test-prep/193429', imageURL: 'https://api.chulabook.com/images/pid-193429.JPG', title: 'To Kill a Mockingbird', authors: ['Harper Lee','Harper Lee'], isbn: '9780061120084', description: 'A novel about racial injustice.'},
-        {productURL: 'https://www.chulabook.com/family-and-children/4678', imageURL: 'https://api.chulabook.com/images/pid-4678.JPG', title: 'The Catcher in the Rye', authors: ['J.D. Salinger','J.D. Salinger'], isbn: '9780316769174', description: 'A novel about teenage angst.'},
-        {productURL: 'https://www.chulabook.com/test-prep/193431', imageURL: 'https://1568886761.rsc.cdn77.org/books/24288/Thumbnail/large.gif?', title: 'The Great Gatsby', authors: ['F. Scott Fitzgerald','F. Scott Fitzgerald'], isbn: '9780743273565', description: 'A novel about the American Dream.'},
-        {productURL: 'https://www.chulabook.com/test-prep/193432', imageURL: 'https://1568886761.rsc.cdn77.org/books/24289/Thumbnail/large.gif?', title: 'The Adventures of Tom Sawyer', authors: ['Mark Twain','Mark Twain'], isbn: '9780486280538', description: 'A novel about a mischievous young boy.'},
-        {productURL: 'https://www.chulabook.com/test-prep/159794', imageURL: '	https://api.chulabook.com/images/pid-159794.jpg', title: 'The Adventures of Huckleberry Finn', authors: ['Mark Twain','Mark Twain'], isbn: '9780486280613', description: 'A novel about a young boy and his journey down the Mississippi River.'},
-        {productURL: 'https://www.chulabook.com/test-prep/193433', imageURL: '	https://1568886761.rsc.cdn77.org/books/24290/Thumbnail/large.gif?', title: 'The Little Prince', authors: ['Mark Twain','Mark Twain'], isbn: '9780152023981', description: 'A novel about a young prince and his journey to other planets.'},
-        {productURL: 'https://example.com/books/the-iliad-and-the-odyssey', imageURL: 'https://example.com/images/the-iliad-and-the-odyssey.jpg', title: 'The Iliad and The Odyssey', authors: ['Mark Twain','Mark Twain'], isbn: '9780684827764', description: 'Two epic poems about the Trojan War.'},
-        {productURL: 'https://example.com/books/the-kite-runner', imageURL: 'https://example.com/images/the-kite-runner.jpg', title: 'The Kite Runner', authors: ['Mark Twain','Mark Twain'], isbn: '9781570626103', description: 'A novel about the relationship between two childhood friends in Afghanistan.'},
-        {productURL: 'https://example.com/books/the-alchemist', imageURL: 'https://example.com/images/the-alchemist.jpg', title: 'The Alchemist', authors: ['Mark Twain','Mark Twain'], isbn: '9780061122415', description: 'A novel about a young shepherd and his journey to fulfill his personal legend.'},
-        {productURL: 'https://example.com/books/the-nightingale', imageURL: 'https://example.com/images/the-nightingale.jpg', title: 'The Nightingale', authors: ['Mark Twain','Mark Twain'], isbn: '9780312577223', description: 'A novel about two sisters and their struggles in France during World War II.'}
+        {url: 'https://www.chulabook.com/test-prep/193428', imageUrl: 'https://api.chulabook.com/images/pid-193428.jpg', title: 'เตรียมสอบสังคม ม.ปลาย ฉบับพร้อมเก็บคะแนนทุกสนามสอบ A-LEVEL (สังคมแมวส้ม)', authors: ['F. Scott Fitzgerald','F. Scott Fitzgerald'], isbn: '9780743273565', description: 'A novel set in the Roaring Twenties.'},
+        {url: 'https://www.chulabook.com/test-prep/4707', imageUrl: 'https://api.chulabook.com/images/pid-4707.JPG', title: 'เตรียมสอบ คณิตศาสตร์ ม.3 เข้า ม.4 (เตรียมอุดม มหิดลวิทยานุสรณ์ สาธิตฯ) :เตรียมสอบ เด็กสายวิทย์', authors: ['George Orwell','George Orwell'], isbn: '', description: 'Dystopian novel about totalitarianism.'},
+        {url: 'https://www.chulabook.com/test-prep/193429', imageUrl: 'https://api.chulabook.com/images/pid-193429.JPG', title: 'To Kill a Mockingbird', authors: ['Harper Lee','Harper Lee'], isbn: '9780061120084', description: 'A novel about racial injustice.'},
+        {url: 'https://www.chulabook.com/family-and-children/4678', imageUrl: 'https://api.chulabook.com/images/pid-4678.JPG', title: 'The Catcher in the Rye', authors: ['J.D. Salinger','J.D. Salinger'], isbn: '9780316769174', description: 'A novel about teenage angst.'},
+        {url: 'https://www.chulabook.com/test-prep/193431', imageUrl: 'https://1568886761.rsc.cdn77.org/books/24288/Thumbnail/large.gif?', title: 'The Great Gatsby', authors: ['F. Scott Fitzgerald','F. Scott Fitzgerald'], isbn: '9780743273565', description: 'A novel about the American Dream.'},
+        {url: 'https://www.chulabook.com/test-prep/193432', imageUrl: 'https://1568886761.rsc.cdn77.org/books/24289/Thumbnail/large.gif?', title: 'The Adventures of Tom Sawyer', authors: ['Mark Twain','Mark Twain'], isbn: '9780486280538', description: 'A novel about a mischievous young boy.'},
+        {url: 'https://www.chulabook.com/test-prep/159794', imageUrl: '	https://api.chulabook.com/images/pid-159794.jpg', title: 'The Adventures of Huckleberry Finn', authors: ['Mark Twain','Mark Twain'], isbn: '9780486280613', description: 'A novel about a young boy and his journey down the Mississippi River.'},
+        {url: 'https://www.chulabook.com/test-prep/193433', imageUrl: '	https://1568886761.rsc.cdn77.org/books/24290/Thumbnail/large.gif?', title: 'The Little Prince', authors: ['Mark Twain','Mark Twain'], isbn: '9780152023981', description: 'A novel about a young prince and his journey to other planets.'},
+        {url: 'https://example.com/books/the-iliad-and-the-odyssey', imageUrl: 'https://example.com/images/the-iliad-and-the-odyssey.jpg', title: 'The Iliad and The Odyssey', authors: ['Mark Twain','Mark Twain'], isbn: '9780684827764', description: 'Two epic poems about the Trojan War.'},
+        {url: 'https://example.com/books/the-kite-runner', imageUrl: 'https://example.com/images/the-kite-runner.jpg', title: 'The Kite Runner', authors: ['Mark Twain','Mark Twain'], isbn: '9781570626103', description: 'A novel about the relationship between two childhood friends in Afghanistan.'},
+        {url: 'https://example.com/books/the-alchemist', imageUrl: 'https://example.com/images/the-alchemist.jpg', title: 'The Alchemist', authors: ['Mark Twain','Mark Twain'], isbn: '9780061122415', description: 'A novel about a young shepherd and his journey to fulfill his personal legend.'},
+        {url: 'https://example.com/books/the-nightingale', imageUrl: 'https://example.com/images/the-nightingale.jpg', title: 'The Nightingale', authors: ['Mark Twain','Mark Twain'], isbn: '9780312577223', description: 'A novel about two sisters and their struggles in France during World War II.'}
     ];
 
     const handleSearch = () => {
+        if (query.trim() === '') {
+            alert('กรุณากรอกข้อมูล');
+            return;
+        }
         const filteredBooks = books.filter(book => {
             if (selectAuthor) {
                 return book.authors.some(author => author.toLowerCase().includes(query.toLowerCase()));
@@ -51,6 +90,7 @@ const Search = () => {
         });
         setResults(filteredBooks);
         setQueryOld(query);
+        fetchData();
     };
 
     const toggleDarkMode = () => {
@@ -59,14 +99,15 @@ const Search = () => {
 
     const handleClick = (page: number) => () => {
         setCurrentPage(page);
+        fetchData();
     };
 
-    const start = (currentPage - 1) * resultsPerPage;
-    const end = start + resultsPerPage;
+    const start = (currentPage - 1) * pageSize;
+    const end = start + pageSize;
     const paginatedResults = results.slice(start, end);
 
     return (
-        <div className={`${paginatedResults.length <=5 ? 'h-screen' : 'h-full'} w-screen mx-auto p-8 md:p-10 ${darkMode ? 'bg-gray-900 text-white' : 'bg-white text-black'} overflow-y-scroll`}>
+        <div className={`${5 <=5 ? 'h-screen' : 'h-full'} w-screen mx-auto p-8 md:p-10 ${darkMode ? 'bg-gray-900 text-white' : 'bg-white text-black'} overflow-y-scroll`}>
             <div className="flex items-center mb-4 flex-row justify-between">
                 <h1 className="text-3xl font-bold mb-4">Book Search Engine</h1>
                 <button onClick={toggleDarkMode} className="flex items-center cursor-pointer hover:text-gray-700 dark:hover:text-gray-300">
@@ -85,7 +126,8 @@ const Search = () => {
                     Search
                 </button>
             </div>
-            <div className="flex items-center mb-4">
+            <div className="flex items-center mb-4 justify-between">
+                <div>
                 <label className="mr-4">
                     <input type="checkbox" checked={selectAuthor} onChange={() => setSelectAuthor(!selectAuthor)} className="mr-2" />
                     Author
@@ -102,20 +144,28 @@ const Search = () => {
                     <input type="checkbox" checked={selectTitle} onChange={() => setSelectTitle(!selectTitle)} className="mr-2" />
                     Title
                 </label>
+                </div>
+                <div>
+                    <label className="mr-4">
+                        <input type="number" value={resultsPerPage} onChange={handlePerPageChange} className="mx-2 px-2 py-1 border rounded" />
+                        จำนวนหนังสือ / หน้า
+                    </label>
+                </div>
             </div>
-            <div id="results" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+            <div id="results" className="">
+                ทั้งหมด {results.length+((currentPage-1)*pageSize)}/{totalHits} หนังสือ
                 {paginatedResults.map((book, index) => (
-                    <div key={index} onClick={() => window.open(`${book.productURL}`, '_blank')} className={`p-4 rounded shadow ${darkMode ? 'bg-gray-700' : 'bg-white'} cursor-pointer flex flex-col justify-between`}>
-                        <div>
-                        <img src={book.imageURL} alt={book.title} className="h-90 object-cover mb-2" />
+                    <div key={index} onClick={() => window.open(`${book.url}`, '_blank')} className={`p-4 rounded shadow ${darkMode ? 'bg-gray-900' : 'bg-white'} cursor-pointer grid grid-cols-4 justify-between shadow hover:bg-gray-200 ${darkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-200'} hover:scale-105 transition-all`}>
+                        <div className="px-10 py-3">
+                        <img src={book.imageUrl} alt={book.title} className="h-90 object-cover mb-2" />
+                        </div>
+                        <div className="mt-2 col-span-2">
                         <h3 className="text-xl font-bold">                        
                         <Highlighter
                             searchWords={[queryOld]}  // Wrap query in an array
                             textToHighlight={book.title}
                             highlightStyle={{ backgroundColor: 'yellow' }}
                         /></h3>
-                        </div>
-                        <div className="mt-2">
                         <p className={`${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                         <span className='font-bold'>
                             Author: 
@@ -150,7 +200,7 @@ const Search = () => {
                 {paginatedResults.length === 0 && <p className={`w-full h-full flex items-center justify-center ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>No results found.</p>}
             </div>
             <div className="flex items-center justify-center mt-4">
-                {[...Array(Math.ceil(results.length / resultsPerPage)).keys()].map(page => (
+                {[...Array(Math.ceil(totalHits / pageSize)).keys()].map(page => (
                     <button
                         key={page}
                         onClick={handleClick(page + 1)}
