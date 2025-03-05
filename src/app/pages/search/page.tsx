@@ -19,24 +19,24 @@ const Search = () => {
     const [selectTitle, setSelectTitle] = useState(true);
 
     const books: Book[] = [
-        {productURL: 'https://www.chulabook.com/test-prep/193428', imageURL: 'https://api.chulabook.com/images/pid-193428.jpg', title: 'เตรียมสอบสังคม ม.ปลาย ฉบับพร้อมเก็บคะแนนทุกสนามสอบ A-LEVEL (สังคมแมวส้ม)', authors: 'F. Scott Fitzgerald', isbn: '9780743273565', description: 'A novel set in the Roaring Twenties.'},
-        {productURL: 'https://www.chulabook.com/test-prep/4707', imageURL: 'https://api.chulabook.com/images/pid-4707.JPG', title: 'เตรียมสอบ คณิตศาสตร์ ม.3 เข้า ม.4 (เตรียมอุดม มหิดลวิทยานุสรณ์ สาธิตฯ) :เตรียมสอบ เด็กสายวิทย์', authors: 'George Orwell', isbn: '', description: 'Dystopian novel about totalitarianism.'},
-        {productURL: 'https://www.chulabook.com/test-prep/193429', imageURL: 'https://api.chulabook.com/images/pid-193429.JPG', title: 'To Kill a Mockingbird', authors: 'Harper Lee', isbn: '9780061120084', description: 'A novel about racial injustice.'},
-        {productURL: 'https://www.chulabook.com/family-and-children/4678', imageURL: 'https://api.chulabook.com/images/pid-4678.JPG', title: 'The Catcher in the Rye', authors: 'J.D. Salinger', isbn: '9780316769174', description: 'A novel about teenage angst.'},
-        {productURL: 'https://www.chulabook.com/test-prep/193431', imageURL: 'https://1568886761.rsc.cdn77.org/books/24288/Thumbnail/large.gif?', title: 'The Great Gatsby', authors: 'F. Scott Fitzgerald', isbn: '9780743273565', description: 'A novel about the American Dream.'},
-        {productURL: 'https://www.chulabook.com/test-prep/193432', imageURL: 'https://1568886761.rsc.cdn77.org/books/24289/Thumbnail/large.gif?', title: 'The Adventures of Tom Sawyer', authors: 'Mark Twain', isbn: '9780486280538', description: 'A novel about a mischievous young boy.'},
-        {productURL: 'https://www.chulabook.com/test-prep/159794', imageURL: '	https://api.chulabook.com/images/pid-159794.jpg', title: 'The Adventures of Huckleberry Finn', authors: 'Mark Twain', isbn: '9780486280613', description: 'A novel about a young boy and his journey down the Mississippi River.'},
-        {productURL: 'https://www.chulabook.com/test-prep/193433', imageURL: '	https://1568886761.rsc.cdn77.org/books/24290/Thumbnail/large.gif?', title: 'The Little Prince', authors: 'Antoine de Saint-Exup ry', isbn: '9780152023981', description: 'A novel about a young prince and his journey to other planets.'},
-        {productURL: 'https://example.com/books/the-iliad-and-the-odyssey', imageURL: 'https://example.com/images/the-iliad-and-the-odyssey.jpg', title: 'The Iliad and The Odyssey', authors: 'Homer', isbn: '9780684827764', description: 'Two epic poems about the Trojan War.'},
-        {productURL: 'https://example.com/books/the-kite-runner', imageURL: 'https://example.com/images/the-kite-runner.jpg', title: 'The Kite Runner', authors: 'Khaled Hosseini', isbn: '9781570626103', description: 'A novel about the relationship between two childhood friends in Afghanistan.'},
-        {productURL: 'https://example.com/books/the-alchemist', imageURL: 'https://example.com/images/the-alchemist.jpg', title: 'The Alchemist', authors: 'Paulo Coelho', isbn: '9780061122415', description: 'A novel about a young shepherd and his journey to fulfill his personal legend.'},
-        {productURL: 'https://example.com/books/the-nightingale', imageURL: 'https://example.com/images/the-nightingale.jpg', title: 'The Nightingale', authors: 'Kristin Hannah', isbn: '9780312577223', description: 'A novel about two sisters and their struggles in France during World War II.'}
+        {productURL: 'https://www.chulabook.com/test-prep/193428', imageURL: 'https://api.chulabook.com/images/pid-193428.jpg', title: 'เตรียมสอบสังคม ม.ปลาย ฉบับพร้อมเก็บคะแนนทุกสนามสอบ A-LEVEL (สังคมแมวส้ม)', authors: ['F. Scott Fitzgerald','F. Scott Fitzgerald'], isbn: '9780743273565', description: 'A novel set in the Roaring Twenties.'},
+        {productURL: 'https://www.chulabook.com/test-prep/4707', imageURL: 'https://api.chulabook.com/images/pid-4707.JPG', title: 'เตรียมสอบ คณิตศาสตร์ ม.3 เข้า ม.4 (เตรียมอุดม มหิดลวิทยานุสรณ์ สาธิตฯ) :เตรียมสอบ เด็กสายวิทย์', authors: ['George Orwell','George Orwell'], isbn: '', description: 'Dystopian novel about totalitarianism.'},
+        {productURL: 'https://www.chulabook.com/test-prep/193429', imageURL: 'https://api.chulabook.com/images/pid-193429.JPG', title: 'To Kill a Mockingbird', authors: ['Harper Lee','Harper Lee'], isbn: '9780061120084', description: 'A novel about racial injustice.'},
+        {productURL: 'https://www.chulabook.com/family-and-children/4678', imageURL: 'https://api.chulabook.com/images/pid-4678.JPG', title: 'The Catcher in the Rye', authors: ['J.D. Salinger','J.D. Salinger'], isbn: '9780316769174', description: 'A novel about teenage angst.'},
+        {productURL: 'https://www.chulabook.com/test-prep/193431', imageURL: 'https://1568886761.rsc.cdn77.org/books/24288/Thumbnail/large.gif?', title: 'The Great Gatsby', authors: ['F. Scott Fitzgerald','F. Scott Fitzgerald'], isbn: '9780743273565', description: 'A novel about the American Dream.'},
+        {productURL: 'https://www.chulabook.com/test-prep/193432', imageURL: 'https://1568886761.rsc.cdn77.org/books/24289/Thumbnail/large.gif?', title: 'The Adventures of Tom Sawyer', authors: ['Mark Twain','Mark Twain'], isbn: '9780486280538', description: 'A novel about a mischievous young boy.'},
+        {productURL: 'https://www.chulabook.com/test-prep/159794', imageURL: '	https://api.chulabook.com/images/pid-159794.jpg', title: 'The Adventures of Huckleberry Finn', authors: ['Mark Twain','Mark Twain'], isbn: '9780486280613', description: 'A novel about a young boy and his journey down the Mississippi River.'},
+        {productURL: 'https://www.chulabook.com/test-prep/193433', imageURL: '	https://1568886761.rsc.cdn77.org/books/24290/Thumbnail/large.gif?', title: 'The Little Prince', authors: ['Mark Twain','Mark Twain'], isbn: '9780152023981', description: 'A novel about a young prince and his journey to other planets.'},
+        {productURL: 'https://example.com/books/the-iliad-and-the-odyssey', imageURL: 'https://example.com/images/the-iliad-and-the-odyssey.jpg', title: 'The Iliad and The Odyssey', authors: ['Mark Twain','Mark Twain'], isbn: '9780684827764', description: 'Two epic poems about the Trojan War.'},
+        {productURL: 'https://example.com/books/the-kite-runner', imageURL: 'https://example.com/images/the-kite-runner.jpg', title: 'The Kite Runner', authors: ['Mark Twain','Mark Twain'], isbn: '9781570626103', description: 'A novel about the relationship between two childhood friends in Afghanistan.'},
+        {productURL: 'https://example.com/books/the-alchemist', imageURL: 'https://example.com/images/the-alchemist.jpg', title: 'The Alchemist', authors: ['Mark Twain','Mark Twain'], isbn: '9780061122415', description: 'A novel about a young shepherd and his journey to fulfill his personal legend.'},
+        {productURL: 'https://example.com/books/the-nightingale', imageURL: 'https://example.com/images/the-nightingale.jpg', title: 'The Nightingale', authors: ['Mark Twain','Mark Twain'], isbn: '9780312577223', description: 'A novel about two sisters and their struggles in France during World War II.'}
     ];
 
     const handleSearch = () => {
         const filteredBooks = books.filter(book => {
             if (selectAuthor) {
-                return book.authors.toLowerCase().includes(query.toLowerCase());
+                return book.authors.some(author => author.toLowerCase().includes(query.toLowerCase()));
             }
             if (selectISBN) {
                 return book.isbn.toLowerCase().includes(query.toLowerCase());
@@ -122,7 +122,7 @@ const Search = () => {
                         </span>                    
                         <Highlighter
                             searchWords={[queryOld]}  // Wrap query in an array
-                            textToHighlight={book.authors}
+                            textToHighlight={book.authors.join(', ')}
                             highlightStyle={{ backgroundColor: 'yellow' }}
                         />
                         </p>
