@@ -5,6 +5,7 @@ import { Book } from '@/app/models/Book';
 import Highlighter from 'react-highlight-words';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMoon, faSun } from '@fortawesome/free-solid-svg-icons';
+import Loading from '@/app/components/Loading';
 
 const Search = () => {
     const [query, setQuery] = useState('');
@@ -20,31 +21,40 @@ const Search = () => {
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [totalHits, setTotalHits] = useState(0);
+    const [isLoading, setIsLoading] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const fetchData = async () => {
-        const response = await fetch('http://100.70.0.1:3000/search', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                queryString: query,
-                queryOption: {
-                    useTitle: selectTitle,
-                    useIsbn: selectISBN,
-                    useDescription: selectDescription,
-                    useAuthors: selectAuthor,
+        setLoading(true);
+        try {
+            setIsLoading(true);
+            const response = await fetch('http://100.70.0.1:3000/search', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
                 },
-                page: page,
-                pageSize: resultsPerPage,
-            }),
-        });
-        const data = await response.json();
-        setResults(data.books);
-        setTotalHits(data.totalHits);
-        setPage(data.page);
-        setPageSize(data.pageSize);
-        console.log(data);
+                body: JSON.stringify({
+                    queryString: query,
+                    queryOption: {
+                        useTitle: selectTitle,
+                        useIsbn: selectISBN,
+                        useDescription: selectDescription,
+                        useAuthors: selectAuthor,
+                    },
+                    page: page,
+                    pageSize: resultsPerPage,
+                }),
+            });
+            const data = await response.json();
+            setResults(data.books);
+            setTotalHits(data.totalHits);
+            setPage(data.page);
+            setPageSize(data.pageSize);
+            console.log(data);
+            setIsLoading(false);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handlePerPageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -91,6 +101,7 @@ const Search = () => {
         setResults(filteredBooks);
         setQueryOld(query);
         fetchData();
+        setCurrentPage(1);
     };
 
     const toggleDarkMode = () => {
@@ -107,108 +118,150 @@ const Search = () => {
     const paginatedResults = results.slice(start, end);
 
     return (
-        <div className={`${5 <=5 ? 'h-screen' : 'h-full'} w-screen mx-auto p-8 md:p-10 ${darkMode ? 'bg-gray-900 text-white' : 'bg-white text-black'} overflow-y-scroll`}>
-            <div className="flex items-center mb-4 flex-row justify-between">
-                <h1 className="text-3xl font-bold mb-4">Book Search Engine</h1>
-                <button onClick={toggleDarkMode} className="flex items-center cursor-pointer hover:text-gray-700 dark:hover:text-gray-300">
-                        {darkMode ? <FontAwesomeIcon icon={faMoon} className="w-10 h-10" /> : <FontAwesomeIcon icon={faSun} className="w-10 h-10" />}
-                </button>
-            </div>
-            <div className="flex items-center mb-4">
-                <input
-                    type="text"
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    placeholder="Search for books..."
-                    className="flex-1 px-4 py-2 border rounded-full shadow mr-4"
-                />
-                <button onClick={handleSearch} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
-                    Search
-                </button>
-            </div>
-            <div className="flex items-center mb-4 justify-between">
-                <div>
-                <label className="mr-4">
-                    <input type="checkbox" checked={selectAuthor} onChange={() => setSelectAuthor(!selectAuthor)} className="mr-2" />
-                    Author
-                </label>
-                <label className="mr-4">
-                    <input type="checkbox" checked={selectISBN} onChange={() => setSelectISBN(!selectISBN)} className="mr-2" />
-                    ISBN
-                </label>
-                <label className="mr-4">
-                    <input type="checkbox" checked={selectDescription} onChange={() => setSelectDescription(!selectDescription)} className="mr-2" />
-                    Description
-                </label>
-                <label className="mr-4">
-                    <input type="checkbox" checked={selectTitle} onChange={() => setSelectTitle(!selectTitle)} className="mr-2" />
-                    Title
-                </label>
+        <div>
+            {loading && <Loading />}
+            <div className={`${5 <=5 ? 'h-screen' : 'h-full'} w-screen mx-auto p-8 md:p-10 ${darkMode ? 'bg-gray-900 text-white' : 'bg-white text-black'} overflow-y-scroll`}>
+                <div className="flex items-center mb-4 flex-row justify-between">
+                    <h1 className="text-3xl font-bold mb-4">Book Search Engine</h1>
+                    <button onClick={toggleDarkMode} className="flex items-center cursor-pointer hover:text-gray-700 dark:hover:text-gray-300">
+                            {darkMode ? <FontAwesomeIcon icon={faMoon} className="w-10 h-10" /> : <FontAwesomeIcon icon={faSun} className="w-10 h-10" />}
+                    </button>
                 </div>
-                <div>
+                <div className="flex items-center mb-4">
+                    <input
+                        type="text"
+                        value={query}
+                        onChange={(e) => setQuery(e.target.value)}
+                        placeholder="Search for books..."
+                        className="flex-1 px-4 py-2 border rounded-full shadow mr-4"
+                    />
+                    <button onClick={handleSearch} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
+                        Search
+                    </button>
+                </div>
+                <div className="flex items-center mb-4 justify-between">
+                    <div>
                     <label className="mr-4">
-                        <input type="number" value={resultsPerPage} onChange={handlePerPageChange} className="mx-2 px-2 py-1 border rounded" />
-                        จำนวนหนังสือ / หน้า
+                        <input type="checkbox" checked={selectAuthor} onChange={() => setSelectAuthor(!selectAuthor)} className="mr-2" />
+                        Author
                     </label>
+                    <label className="mr-4">
+                        <input type="checkbox" checked={selectISBN} onChange={() => setSelectISBN(!selectISBN)} className="mr-2" />
+                        ISBN
+                    </label>
+                    <label className="mr-4">
+                        <input type="checkbox" checked={selectDescription} onChange={() => setSelectDescription(!selectDescription)} className="mr-2" />
+                        Description
+                    </label>
+                    <label className="mr-4">
+                        <input type="checkbox" checked={selectTitle} onChange={() => setSelectTitle(!selectTitle)} className="mr-2" />
+                        Title
+                    </label>
+                    </div>
+                    <div>
+                        <label className="mr-4">
+                            <input type="number" value={resultsPerPage} onChange={handlePerPageChange} className="mx-2 px-2 py-1 border rounded" />
+                            จำนวนหนังสือ / หน้า
+                        </label>
+                    </div>
                 </div>
-            </div>
-            <div id="results" className="">
-                ทั้งหมด {results.length+((currentPage-1)*pageSize)}/{totalHits} หนังสือ
-                {paginatedResults.map((book, index) => (
-                    <div key={index} onClick={() => window.open(`${book.url}`, '_blank')} className={`p-4 rounded shadow ${darkMode ? 'bg-gray-900' : 'bg-white'} cursor-pointer grid grid-cols-4 justify-between shadow hover:bg-gray-200 ${darkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-200'} hover:scale-105 transition-all`}>
-                        <div className="px-10 py-3">
-                        <img src={book.imageUrl} alt={book.title} className="h-90 object-cover mb-2" />
-                        </div>
-                        <div className="mt-2 col-span-2">
-                        <h3 className="text-xl font-bold">                        
-                        <Highlighter
-                            searchWords={[queryOld]}  // Wrap query in an array
-                            textToHighlight={book.title}
-                            highlightStyle={{ backgroundColor: 'yellow' }}
-                        /></h3>
-                        <p className={`${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                        <span className='font-bold'>
-                            Author: 
-                        </span>                    
-                        <Highlighter
-                            searchWords={[queryOld]}  // Wrap query in an array
-                            textToHighlight={book.authors.join(', ')}
-                            highlightStyle={{ backgroundColor: 'yellow' }}
-                        />
-                        </p>
-                        <p className={`${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                        <span className='font-bold'>
-                            ISBN:
-                        </span> 
-                        {book.isbn === "" ? 'N/A' :   
-                        <Highlighter
-                            searchWords={[queryOld]}  // Wrap query in an array
-                            textToHighlight={book.isbn}
-                            highlightStyle={{ backgroundColor: 'yellow' }}
-                        />}
-                        </p>
-                        <p className={`${darkMode ? 'text-gray-300' : 'text-gray-700'}`}><span className='font-bold'>Description: </span> 
-                        <Highlighter
+                <div id="results" className="">
+                    ทั้งหมด {results.length+((currentPage-1)*pageSize)}/{totalHits} หนังสือ
+                    {paginatedResults.map((book, index) => (
+                        <div key={index} onClick={() => window.open(`${book.url}`, '_blank')} className={`p-4 rounded shadow ${darkMode ? 'bg-gray-900' : 'bg-white'} cursor-pointer grid grid-cols-4 justify-between shadow hover:bg-gray-200 ${darkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-200'} hover:scale-105 transition-all`}>
+                            <div className="px-10 py-3">
+                            <img src={book.imageUrl} alt={book.title} className="h-90 object-cover mb-2" />
+                            </div>
+                            <div className="mt-2 col-span-2">
+                            <h3 className="text-xl font-bold">                        
+                            <Highlighter
                                 searchWords={[queryOld]}  // Wrap query in an array
-                                textToHighlight={book.description}
+                                textToHighlight={book.title}
+                                highlightStyle={{ backgroundColor: 'yellow' }}
+                            /></h3>
+                            <p className={`${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                            <span className='font-bold'>
+                                Author: 
+                            </span>                    
+                            <Highlighter
+                                searchWords={[queryOld]}  // Wrap query in an array
+                                textToHighlight={book.authors.join(', ')}
                                 highlightStyle={{ backgroundColor: 'yellow' }}
                             />
-                        </p>
+                            </p>
+                            <p className={`${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                            <span className='font-bold'>
+                                ISBN:
+                            </span> 
+                            {book.isbn === "" ? 'N/A' :   
+                            <Highlighter
+                                searchWords={[queryOld]}  // Wrap query in an array
+                                textToHighlight={book.isbn}
+                                highlightStyle={{ backgroundColor: 'yellow' }}
+                            />}
+                            </p>
+                            <p className={`${darkMode ? 'text-gray-300' : 'text-gray-700'}`}><span className='font-bold'>Description: </span> 
+                            <Highlighter
+                                    searchWords={[queryOld]}  // Wrap query in an array
+                                    textToHighlight={book.description}
+                                    highlightStyle={{ backgroundColor: 'yellow' }}
+                                />
+                            </p>
+                            <p className={`${darkMode ? 'text-gray-300' : 'text-gray-700'} mt-10`}><span className='font-bold'>Url: </span> 
+                            <span className='ml-2 underline cursor-pointer hover:text-blue-600'>
+                            <Highlighter
+                                    searchWords={[queryOld]}  // Wrap query in an array
+                                    textToHighlight={book.url}
+                                    highlightStyle={{ backgroundColor: 'yellow' }}
+                                />
+                            </span>
+                            </p>
+                            </div>
                         </div>
-                    </div>
-                ))}
-                {paginatedResults.length === 0 && <p className={`w-full h-full flex items-center justify-center ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>No results found.</p>}
-            </div>
-            <div className="flex items-center justify-center mt-4">
-                {[...Array(Math.ceil(totalHits / pageSize)).keys()].map(page => (
-                    <button
-                        key={page}
-                        onClick={handleClick(page + 1)}
-                        className={`mx-1 px-4 py-2 rounded-full ${currentPage === page + 1 ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'}`}
-                    >
-                        {page + 1}
-                    </button>
-                ))}
+                    ))}
+                    {paginatedResults.length === 0 && <p className={`w-full h-full flex items-center justify-center ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>No results found.</p>}
+                </div>
+                <div className="flex items-center justify-center mt-4">
+                    {currentPage > 1 && (
+                        <button
+                            onClick={handleClick(currentPage - 1)}
+                            className="mx-1 px-4 py-2 rounded-full bg-gray-200 text-gray-700"
+                        >
+                            &lt;
+                        </button>
+                    )}
+                    {[...Array(Math.min(10, Math.ceil(totalHits / pageSize))).keys()].map(page => (
+                        <button
+                            key={page}
+                            onClick={handleClick(page + 1)}
+                            className={`mx-1 px-4 py-2 rounded-full ${currentPage === page + 1 ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'}`}
+                            disabled={currentPage === Math.ceil(totalHits / pageSize) && page + 1 > Math.ceil(totalHits / pageSize)}
+                        >
+                            {page + 1}
+                        </button>
+                    ))}
+                    {Math.ceil(totalHits / pageSize) > 10 && (
+                        <>
+                            <span className="mx-1">...</span>
+                            <button
+                                onClick={handleClick(Math.ceil(totalHits / pageSize))}
+                                className="mx-1 px-4 py-2 rounded-full bg-gray-200 text-gray-700"
+                                disabled={currentPage === Math.ceil(totalHits / pageSize)}
+                            >
+                                {Math.ceil(totalHits / pageSize)}
+                            </button>
+                        </>
+                    )}
+                    {currentPage < Math.ceil(totalHits / pageSize) && (
+                        <button
+                            onClick={handleClick(currentPage + 1)}
+                            className="mx-1 px-4 py-2 rounded-full bg-gray-200 text-gray-700"
+                            disabled={currentPage + 1 > Math.ceil(totalHits / pageSize)}
+                        >
+                            &gt;
+                        </button>
+                    )}
+                </div>
             </div>
         </div>
     );
