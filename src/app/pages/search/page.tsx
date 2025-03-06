@@ -10,7 +10,6 @@ import Loading from '@/app/components/Loading';
 const Search = () => {
     const [query, setQuery] = useState('');
     const [queryOld, setQueryOld] = useState('');
-    const [results, setResults] = useState<Book[]>([]);
     const [darkMode, setDarkMode] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [resultsPerPage, setResultsPerPage] = useState(10);
@@ -18,16 +17,14 @@ const Search = () => {
     const [selectISBN, setSelectISBN] = useState(true);
     const [selectDescription, setSelectDescription] = useState(true);
     const [selectTitle, setSelectTitle] = useState(true);
-    const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [totalHits, setTotalHits] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
-    const [loading, setLoading] = useState(false);
-
-    const fetchData = async () => {
-        setLoading(true);
+    const [paginatedResults, setPaginatedResults] = useState<Book[]>([]);
+    const fetchData = async (page: number) => {
+        setIsLoading(true);
+        console.log('fetchData', page);
         try {
-            setIsLoading(true);
             const response = await fetch('http://100.70.0.1:3000/search', {
                 method: 'POST',
                 headers: {
@@ -46,15 +43,19 @@ const Search = () => {
                 }),
             });
             const data = await response.json();
-            setResults(data.books);
             setTotalHits(data.totalHits);
-            setPage(data.page);
             setPageSize(data.pageSize);
-            console.log(data);
-            setIsLoading(false);
+            setCurrentPage(page);
+            setPaginatedResults(data.books.slice(1, data.books.length));
+            console.log(data.books);
         } finally {
-            setLoading(false);
+            setIsLoading(false);
         }
+    };
+
+    const handleClick = (page: number) => () => {
+        setCurrentPage(page);
+        fetchData(page);
     };
 
     const handlePerPageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -83,48 +84,22 @@ const Search = () => {
             alert('กรุณากรอกข้อมูล');
             return;
         }
-        const filteredBooks = books.filter(book => {
-            if (selectAuthor) {
-                return book.authors.some(author => author.toLowerCase().includes(query.toLowerCase()));
-            }
-            if (selectISBN) {
-                return book.isbn.toLowerCase().includes(query.toLowerCase());
-            }
-            if (selectDescription) {
-                return book.description.toLowerCase().includes(query.toLowerCase());
-            }
-            if (selectTitle) {
-                return book.title.toLowerCase().includes(query.toLowerCase());
-            }
-            return book.title.toLowerCase().includes(query.toLowerCase());
-        });
-        setResults(filteredBooks);
         setQueryOld(query);
-        fetchData();
-        setCurrentPage(1);
+        fetchData(1);
     };
 
     const toggleDarkMode = () => {
         setDarkMode(!darkMode);
     };
 
-    const handleClick = (page: number) => () => {
-        setCurrentPage(page);
-        fetchData();
-    };
-
-    const start = (currentPage - 1) * pageSize;
-    const end = start + pageSize;
-    const paginatedResults = results.slice(start, end);
-
     return (
         <div>
-            {loading && <Loading />}
+            {isLoading && <Loading />}
             <div className={`${5 <=5 ? 'h-screen' : 'h-full'} w-screen mx-auto p-8 md:p-10 ${darkMode ? 'bg-gray-900 text-white' : 'bg-white text-black'} overflow-y-scroll`}>
                 <div className="flex items-center mb-4 flex-row justify-between">
                     <h1 className="text-3xl font-bold mb-4">Book Search Engine</h1>
                     <button onClick={toggleDarkMode} className="flex items-center cursor-pointer hover:text-gray-700 dark:hover:text-gray-300">
-                            {darkMode ? <FontAwesomeIcon icon={faMoon} className="w-10 h-10" /> : <FontAwesomeIcon icon={faSun} className="w-10 h-10" />}
+                        {darkMode ? <FontAwesomeIcon icon={faMoon} className="w-10 h-10" /> : <FontAwesomeIcon icon={faSun} className="w-10 h-10" />}
                     </button>
                 </div>
                 <div className="flex items-center mb-4">
@@ -166,7 +141,7 @@ const Search = () => {
                     </div>
                 </div>
                 <div id="results" className="">
-                    ทั้งหมด {results.length+((currentPage-1)*pageSize)}/{totalHits} หนังสือ
+                    จำนวน {((currentPage-1)* resultsPerPage)+1} - {paginatedResults.length+((currentPage-1)* resultsPerPage)+1} / {totalHits} หนังสือ
                     {paginatedResults.map((book, index) => (
                         <div key={index} onClick={() => window.open(`${book.url}`, '_blank')} className={`p-4 rounded shadow ${darkMode ? 'bg-gray-900' : 'bg-white'} cursor-pointer grid grid-cols-4 justify-between shadow hover:bg-gray-200 ${darkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-200'} hover:scale-105 transition-all`}>
                             <div className="px-10 py-3">
