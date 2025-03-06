@@ -46,7 +46,7 @@ const Search = () => {
             setTotalHits(data.totalHits);
             setPageSize(data.pageSize);
             setCurrentPage(page);
-            setPaginatedResults(data.books.slice(1, data.books.length));
+            setPaginatedResults(data.books.slice(0, data.books.length));
             console.log(data.books);
         } finally {
             setIsLoading(false);
@@ -54,6 +54,7 @@ const Search = () => {
     };
 
     const handleClick = (page: number) => () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
         setCurrentPage(page);
         fetchData(page);
     };
@@ -88,6 +89,13 @@ const Search = () => {
         fetchData(1);
     };
 
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === 'Enter') {
+            handleSearch();
+        }
+    };
+
+
     const toggleDarkMode = () => {
         setDarkMode(!darkMode);
     };
@@ -106,6 +114,7 @@ const Search = () => {
                     <input
                         type="text"
                         value={query}
+                        onKeyDown={handleKeyDown}
                         onChange={(e) => setQuery(e.target.value)}
                         placeholder="Search for books..."
                         className="flex-1 px-4 py-2 border rounded-full shadow mr-4"
@@ -150,7 +159,7 @@ const Search = () => {
                             <div className="mt-2 col-span-2">
                             <h3 className="text-xl font-bold">                        
                             <Highlighter
-                                searchWords={[queryOld]}  // Wrap query in an array
+                                searchWords={queryOld.split(/(?<!\+)(?<!\-)\s+/).filter(s => s !== '+' && s !== '-')}  // Wrap query in an array
                                 textToHighlight={book.title}
                                 highlightStyle={{ backgroundColor: 'yellow' }}
                             /></h3>
@@ -159,7 +168,7 @@ const Search = () => {
                                 Author: 
                             </span>                    
                             <Highlighter
-                                searchWords={[queryOld]}  // Wrap query in an array
+                                searchWords={queryOld.split(/(?<!\+)(?<!\-)\s+/).filter(s => s !== '+' && s !== '-')}  // Wrap query in an array
                                 textToHighlight={book.authors.join(', ')}
                                 highlightStyle={{ backgroundColor: 'yellow' }}
                             />
@@ -170,14 +179,14 @@ const Search = () => {
                             </span> 
                             {book.isbn === "" ? 'N/A' :   
                             <Highlighter
-                                searchWords={[queryOld]}  // Wrap query in an array
+                                searchWords={queryOld.split(/(?<!\+)(?<!\-)\s+/).filter(s => s !== '+' && s !== '-')}  // Wrap query in an array
                                 textToHighlight={book.isbn}
                                 highlightStyle={{ backgroundColor: 'yellow' }}
                             />}
                             </p>
                             <p className={`${darkMode ? 'text-gray-300' : 'text-gray-700'}`}><span className='font-bold'>Description: </span> 
                             <Highlighter
-                                    searchWords={[queryOld]}  // Wrap query in an array
+                                    searchWords={queryOld.split(/(?<!\+)(?<!\-)\s+/).filter(s => s !== '+' && s !== '-')}  // Wrap query in an array
                                     textToHighlight={book.description}
                                     highlightStyle={{ backgroundColor: 'yellow' }}
                                 />
@@ -185,7 +194,7 @@ const Search = () => {
                             <p className={`${darkMode ? 'text-gray-300' : 'text-gray-700'} mt-10`}><span className='font-bold'>Url: </span> 
                             <span className='ml-2 underline cursor-pointer hover:text-blue-600'>
                             <Highlighter
-                                    searchWords={[queryOld]}  // Wrap query in an array
+                                    searchWords={queryOld.split(/(?<!\+)(?<!\-)\s+/).filter(s => s !== '+' && s !== '-')}  // Wrap query in an array
                                     textToHighlight={book.url}
                                     highlightStyle={{ backgroundColor: 'yellow' }}
                                 />
