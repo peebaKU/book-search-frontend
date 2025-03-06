@@ -25,7 +25,7 @@ const Search = () => {
         setIsLoading(true);
         console.log('fetchData', page);
         try {
-            const response = await fetch('http://100.70.0.1:3000/search', {
+            const response = await fetch('http://localhost:3000/search', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
